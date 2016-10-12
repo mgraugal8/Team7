@@ -2,9 +2,10 @@
 %% Description: Determine the characteristics of the signals in the 
 %% training set: max and min size, form factor, filling ratio of each type 
 %% of signal, frequency of appearance (using text annotations and 
-%% ground-truth masks). Group the signals according to their shape and 
-%% color
+%% ground-truth masks). Group the signals according to their shape and color
+%% NOTE: you must have folder train on your main directory to compute images
 
+function task1()
 clear all;                      % Clear screen
 samples = dir('train');         % List directory
 
@@ -15,7 +16,7 @@ samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
 % Initialize group of images in order to preallocate memory
 % Format: (field, value) --> (type of signal, array of values)
 n = 0;  % rows. Firstly, initialized to 0
-m = 5;  % columns. 1: file name, 2: width, 3: height, 4: form factor, 
+m = 7;  % columns. 1: file name, 2: width, 3: height, 4: form factor, 
         % 5: bbox area,  6: compute area, 7: filling ratio
 images_data = struct('A', zeros(n, m),'B', zeros(n, m),'C', zeros(n, m) ...
 ,'D', zeros(n, m), 'E', zeros(n, m),'F', zeros(n, m));
@@ -27,8 +28,8 @@ for ii=1:length(samples)
     
     % Get name. Delete character '.' from string name in order to 
     % save index of name image
-    name_sample = strrep(name_sample,'.','');
-    value(1) = str2double(name_sample);     % file name
+    sname_sample = strrep(name_sample,'.','');
+    value(1) = str2double(sname_sample);     % file name
     tly = str2double(text{1});              
     tlx = str2double(text{2});
     bry = str2double(text{3});
@@ -39,13 +40,22 @@ for ii=1:length(samples)
     value(3) = abs(tly-bry);                % height
     value(4) = value(2)/value(3);           % form factor
     value(5) = value(2)*value(3);           % bbox area
-    % value(6) = compute_area(name_sample); % compute area
-    % value(7) = value(6)/value(5);         % filling ratio
+    
+    % Read mask image
+    directory = sprintf('train/mask/mask.%s.png', name_sample);
+    mask = imread(directory);
+    % Compute area = count number of white píxels
+    value(6) = sum(sum(mask));
+    value(7) = value(6)/value(5);           % filling ratio
 
-    image_type = char(text(1,5));
     % There are extra space after letter. So we get the letter of type
     % image only from position (1,1). Note: position(1,2) space character
+    image_type = char(text(1,5));
     image_type = image_type(1,1);               
     [n, ~] = size(images_data().(image_type));
     images_data().(image_type)(n+1, :) = value(1, :);
+end
+
+% Save struct of images_data
+save images_data.mat images_data
 end

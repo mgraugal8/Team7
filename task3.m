@@ -1,55 +1,62 @@
 %% Task 3 Color segmentation to generate a mask
 
 function task3()
-%--------------------------------------------------------------------------
-%% TESTING METHODS
-clear all;    
-% Get image from dataset to train system
-image = imread('datasets/train_set/train_split/00.001232.jpg');
-show_channels_histograms(image, 'rgb');
-show_channels_histograms(image, 'hsv');
+% Data images to load segmented images
+images_segmented_1 = zeros(0, 0, 0);
+images_segmented_2 = zeros(0, 0, 0);
 
-%--------------------------------------------------------------------------
-%% METHOD # 1    
+% List directory
+samples = dir('datasets/train_set/train_split');        
+samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
 
-% Apply equation in order to identify color on images. (RGB color space)
-image_segmented = segmentation_by_equation(image);
+num_image = 0;
+total_images = uint8((length(samples))/4);
 
-% Shows original and image segmented
-figure();
-set(gcf,'name', 'Method #1','numbertitle','off', ...
-'Position', [150, 150, 1300, 400]);
-subplot(1,2,1), imshow(image), title('RGB color space');
-subplot(1,2,2), imshow(image_segmented), title('Detections');
-pause();
+for ii=1:total_images    
+    % Load image
+    [~, name_sample, ~] = fileparts(samples(ii).name);
+    directory = sprintf('datasets/train_set/train_split/%s.jpg',...
+    name_sample);
+    image = imread(directory);
 
-%--------------------------------------------------------------------------
-%% METHOD # 2
-% Converting an RGB image into normalized RGB removes the effect of any
-% intensity variations. Normalizing can provide exactly what you need to 
-% compare two images taken under variations of illumination PROVIDING 
-% the colour temperature of the light source doesn't change as the 
-% illumination output varies
+    %---------------------------- METHOD #1 ---------------------------%
+    % Apply equation in order to identify color on images. 
+    % (RGB color space)
+    image_segmented = segmentation_by_equation(image);
 
-% LINK Reference to convert RGB into normalized RGB: 
-% https://es.mathworks.com/matlabcentral/newsreader/view_thread/171190
+    [n, ~] = size(images_segmented_1);
+    images_segmented_1(n+1, :, :) = image_segmented(:, :);
 
-image_normalized = normalize_RGB_image(image);
-image_segmented = segmentation_by_equation(image_normalized);
+    %---------------------------- METHOD #2 ---------------------------%
+    % Converting an RGB image into normalized RGB removes the effect of 
+    % anyintensity variations. Normalizing can provide exactly what you
+    % need to compare two images taken under variations of illumination
+    % PROVIDING the colour temperature of the light source doesn't
+    % change as the illumination output varies
 
-% Shows original and image segmented
-figure();
-set(gcf,'name', 'Method #2','numbertitle','off', ...
-'Position', [150, 150, 1300, 400]);
-subplot(1,2,1), imshow(image_normalized), title('RGB normalize color space');
-subplot(1,2,2), imshow(image_segmented), title('Detections');
-pause();
+    % LINK Reference to convert RGB into normalized RGB: 
+    % https://es.mathworks.com/matlabcentral/newsreader ...
+    % /view_thread/171190
+    image_normalized = normalize_RGB_image(image);
+    image_segmented = segmentation_by_equation(image_normalized);
 
-%--------------------------------------------------------------------------
-%% METHOD # 3
+    [n, ~] = size(images_segmented_2);
+    images_segmented_2(n+1, :, :) = image_segmented(:, :);
 
-end
+    %---------------------------- METHOD #3 ---------------------------%
 
+    
+    % Message to display on matlab
+    num_image = num_image + 1;
+    message = sprintf('Images processed: %d/%d', num_image, total_images);
+    disp(message);
+end 
+
+% Save struct of segmented images
+save images_segmented_1.mat images_segmented_1
+save images_segmented_2.mat images_segmented_2
+end    
+    
 % Function: normalize_RGB_image
 % Description: convert an RGB image into normalized RGB
 % Input: image in RGB color space
@@ -83,15 +90,20 @@ green_channel = image(:, :, 2);
 blue_channel = image(:, :, 3); 
 
 % Apply equation depending on color segmentation
+% RED color segmentation
 segmentation_red = max(0,double(red_channel) - ...
 0.65*(double(green_channel) + double(blue_channel)));
+% BLUE color segmentation
 segmentation_blue = max(0, double(blue_channel) - ...
 0.65*(double(red_channel) + double(green_channel)));
 
-% Merge channels blue and red
+% Merge channels RED and BLUE
 segmentation = min(1, (segmentation_red + segmentation_blue));
 segmentation=(segmentation/max(max(segmentation)));
 segmentation = segmentation(:,:)>0.15;
+
+% Fill holes of image in order to identify signals
+segmentation = imfill(segmentation, 'holes');
 end
 
 % Function: show_channels_histograms
