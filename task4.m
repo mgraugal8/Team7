@@ -4,22 +4,14 @@ function task4()
 % List directory
 samples = dir('datasets/train_set/train_split');        
 samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
-total_images = uint8((length(samples))/8);
-
-% Get all images from matlab file
-images_segmented_1 = load('images_segmented_1.mat');
-images_segmented_1 = images_segmented_1.images_segmented_1;
-images_segmented_2 = load('images_segmented_2.mat');
-images_segmented_2 = images_segmented_2.images_segmented_2;
-images_segmented_3 = load('images_segmented_3.mat');
-images_segmented_3  = images_segmented_3.images_segmented_3;
+total_images = uint8(length(samples));
 
 % Get time per frame from matlab file
-time_per_frame_1 = load('time_per_frame_1.mat');
+time_per_frame_1 = load('matlab_files/time_per_frame_1.mat');
 time_per_frame_1 = time_per_frame_1.time_per_frame_1;
-time_per_frame_2 = load('time_per_frame_2.mat');
+time_per_frame_2 = load('matlab_files/time_per_frame_2.mat');
 time_per_frame_2 = time_per_frame_2.time_per_frame_2;
-time_per_frame_3 = load('time_per_frame_3.mat');
+time_per_frame_3 = load('matlab_files/time_per_frame_3.mat');
 time_per_frame_3 = time_per_frame_3.time_per_frame_3;
 
 % Define metrics struct to save partial results
@@ -34,22 +26,31 @@ median_metrics = struct('Precision', 0,'Accuracy', 0, 'Recall', 0, 'TP', 0, ...
 final_results = struct('method1', median_metrics, 'method2', median_metrics, ...
 'method3', median_metrics);
 
-for ii=1:total_images 
 % Get image from struct
-simages_segmented_1 = images_segmented_1(ii,:,:);
-image_1 = logical(squeeze(simages_segmented_1(1,:,:)));
-simages_segmented_2 = images_segmented_2(ii,:,:);
-image_2 = logical(squeeze(simages_segmented_2(1,:,:)));
-simages_segmented_3 = images_segmented_3(ii,:,:);
-image_3 = logical(squeeze(simages_segmented_3(1,:,:)));
+for ii=1:total_images 
+% Load image from segmentation method 1
+message = sprintf('Loading image: %d/%d segmented 1', ii, total_images);
+disp(message);
+image_1 = matfile('matlab_files/images_segmented_1.mat') ;
+image_1 = image_1.images_segmented_1(ii, :, :);   
+image_1 = logical(squeeze(image_1(1,:,:)));
 
-% Load original image
-[~, name_sample, ~] = fileparts(samples(ii).name);
-dir_image = sprintf('datasets/train_set/train_split/%s.jpg',...
-name_sample);
-original_image = imread(dir_image);
+% Load image from segmentation method 2
+message = sprintf('Loading image: %d/%d segmented 2', ii, total_images);
+disp(message);
+image_2 = matfile('matlab_files/images_segmented_2.mat') ;
+image_2 = image_2.images_segmented_2(ii, :, :); 
+image_2 = logical(squeeze(image_2(1,:,:)));
+
+% Load image from segmentation method 3
+message = sprintf('Loading image: %d/%d segmented 3', ii, total_images);
+disp(message);
+image_3 = matfile('matlab_files/images_segmented_3.mat') ;
+image_3 = image_3.images_segmented_3(ii, :, :);   
+image_3 = logical(squeeze(image_3(1,:,:)));
 
 % Load mask of groundtruth
+[~, name_sample, ~] = fileparts(samples(ii).name);
 dir_mask = sprintf('datasets/train_set/train_split/mask/mask.%s.png',...
 name_sample);
 mask = logical(imread(dir_mask));
@@ -72,44 +73,15 @@ FP2, FN2, time_per_frame_2(ii));
 results.method3 = save_metrics(results.method3, ii, P3, ACC3, R3, F13, TP3, ...
 FP3, FN3, time_per_frame_3(ii));
 
-% figure();
-% set(gcf,'name','Segmentations','numbertitle','off','Position', ...
-% [150, 150, 1300, 600]);
-% subplot(2,3,1), imshow(original_image), title('Original image');
-% subplot(2,3,2), imshow(image_1), title('METHOD #1');
-% subplot(2,3,3), imshow(image_2 & mask), title('TRUE POSITIVES');
-% subplot(2,3,4), imshow((((~ image_1) & (~ mask)))),...
-% title('TRUE NEGATIVES');
-% subplot(2,3,5), imshow((~ image_1) & mask), title('FALSE POSITIVES');
-% subplot(2,3,6), imshow(image_1 & (~ mask)), title('FALSE NEGATIVES');
-% pause();
-% close all;
-% 
-% figure();
-% set(gcf,'name','Segmentations','numbertitle','off','Position', ...
-% [150, 150, 1300, 600]);
-% subplot(2,3,1), imshow(original_image), title('Original image');
-% subplot(2,3,2), imshow(image_2), title('METHOD #2');
-% subplot(2,3,3), imshow(image_2 & mask), title('TRUE POSITIVES');
-% subplot(2,3,4), imshow((((~ image_2) & (~ mask)))),...
-% title('TRUE NEGATIVES');
-% subplot(2,3,5), imshow((~ image_2) & mask), title('FALSE POSITIVES');
-% subplot(2,3,6), imshow(image_2 & (~ mask)), title('FALSE NEGATIVES');
-% pause();
-% close all;
-% 
-% figure();
-% set(gcf,'name','Segmentations','numbertitle','off','Position', ...
-% [150, 150, 1300, 600]);
-% subplot(2,3,1), imshow(original_image), title('Original image');
-% subplot(2,3,2), imshow(image_3), title('METHOD #3');
-% subplot(2,3,3), imshow(image_3 & mask), title('TRUE POSITIVES');
-% subplot(2,3,4), imshow((((~ image_3) & (~ mask)))),...
-% title('TRUE NEGATIVES');
-% subplot(2,3,5), imshow((~ image_3) & mask), title('FALSE POSITIVES');
-% subplot(2,3,6), imshow(image_3 & (~ mask)), title('FALSE NEGATIVES');
-% pause();
-% close all;
+% Load original image and plot with segmented images
+% [~, name_sample, ~] = fileparts(samples(ii).name);
+% dir_image = sprintf('datasets/train_set/train_split/%s.jpg',...
+% name_sample);
+% original_image = imread(dir_image);
+% plot_images(original_image, image_1, mask, 'METHOD 1');
+% plot_images(original_image, image_2, mask, 'METHOD 2');
+% plot_images(original_image, image_3, mask, 'METHOD 3');
+
 end
 
 final_results.method1 = get_results(results.method1, final_results.method1);
@@ -120,9 +92,24 @@ final_results.method3 = get_results(results.method3, final_results.method3);
 results_method1 = final_results.method1;
 results_method2 = final_results.method2;
 results_method3 = final_results.method3;
-save results_method1.mat results_method1
-save results_method2.mat results_method2
-save results_method3.mat results_method3
+save matlab_files/results_method1.mat results_method1
+save matlab_files/results_method2.mat results_method2
+save matlab_files/results_method3.mat results_method3
+end
+
+function plot_images(original_image, image, mask, method)
+figure();
+set(gcf,'name','Segmentations','numbertitle','off','Position', ...
+[150, 150, 1300, 600]);
+subplot(2,3,1), imshow(original_image), title('Original image');
+subplot(2,3,2), imshow(image), title(method);
+subplot(2,3,3), imshow(image & mask), title('TRUE POSITIVES');
+subplot(2,3,4), imshow((((~ image) & (~ mask)))),...
+title('TRUE NEGATIVES');
+subplot(2,3,5), imshow((~ image) & mask), title('FALSE POSITIVES');
+subplot(2,3,6), imshow(image & (~ mask)), title('FALSE NEGATIVES');
+pause();
+close all;
 end
 
 function final_results = get_results(results, final_results)

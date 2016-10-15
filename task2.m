@@ -8,8 +8,8 @@
 
 function task2()
 % Load images_data from task1
-if exist('images_data.mat', 'file') == 2
-    images_data = load('images_data.mat');
+if exist('matlab_files/images_data.mat', 'file') == 2
+    images_data = load('matlab_files/images_data.mat');
     images_data = images_data.images_data;
     %% Create new directories
     if ~exist('datasets', 'dir')

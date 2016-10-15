@@ -57,5 +57,5 @@ for ii=1:length(samples)
 end
 
 % Save struct of images_data
-save images_data.mat images_data
+save matlab_files/images_data.mat images_data
 end
