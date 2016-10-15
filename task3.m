@@ -75,7 +75,7 @@ end
 
 % Save struct of segmented images
 save('images_segmented_1.mat', 'images_segmented_1', '-v7.3');
-save('images_segmented_2.mat', 'images_segmented_3', '-v7.3');
+save('images_segmented_2.mat', 'images_segmented_2', '-v7.3');
 save('images_segmented_3.mat', 'images_segmented_3', '-v7.3');
 % Save struct of time per frame rate
 save time_per_frame_1.mat time_per_frame_1
