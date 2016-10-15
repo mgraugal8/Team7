@@ -4,13 +4,18 @@ function task3()
 % Data images to load segmented images
 images_segmented_1 = zeros(0, 0, 0);
 images_segmented_2 = zeros(0, 0, 0);
+images_segmented_3 = zeros(0, 0, 0);
+
+time_per_frame_1 = zeros(0);
+time_per_frame_2 = zeros(0);
+time_per_frame_3 = zeros(0);
 
 % List directory
 samples = dir('datasets/train_set/train_split');        
 samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
 
 num_image = 0;
-total_images = uint8((length(samples))/4);
+total_images = uint8(length(samples));
 
 for ii=1:total_images    
     % Load image
@@ -22,7 +27,9 @@ for ii=1:total_images
     %---------------------------- METHOD #1 ---------------------------%
     % Apply equation in order to identify color on images. 
     % (RGB color space)
+    tic;
     image_segmented = segmentation_by_equation(image);
+    time_per_frame_1(ii) = toc;
 
     [n, ~] = size(images_segmented_1);
     images_segmented_1(n+1, :, :) = image_segmented(:, :);
@@ -37,14 +44,28 @@ for ii=1:total_images
     % LINK Reference to convert RGB into normalized RGB: 
     % https://es.mathworks.com/matlabcentral/newsreader ...
     % /view_thread/171190
+    tic
     image_normalized = normalize_RGB_image(image);
     image_segmented = segmentation_by_equation(image_normalized);
+    time_per_frame_2(ii) = toc;
 
     [n, ~] = size(images_segmented_2);
     images_segmented_2(n+1, :, :) = image_segmented(:, :);
 
     %---------------------------- METHOD #3 ---------------------------%
-
+    
+    % Converting an RGB image into XYZ color space
+    cd colorspace
+    tic
+    image_hsv = colorspace('rgb->xyz',image);
+    cd ..
+    image_segmented = segmentation_by_equation(image_hsv);
+    time_per_frame_3(ii) = toc;
+    
+    [n, ~] = size(images_segmented_3);
+    images_segmented_3(n+1, :, :) = image_segmented(:, :);
+    
+    %------------------------------------------------------------------%
     
     % Message to display on matlab
     num_image = num_image + 1;
@@ -53,8 +74,13 @@ for ii=1:total_images
 end 
 
 % Save struct of segmented images
-save images_segmented_1.mat images_segmented_1
-save images_segmented_2.mat images_segmented_2
+save('images_segmented_1.mat', 'images_segmented_1', '-v7.3');
+save('images_segmented_2.mat', 'images_segmented_3', '-v7.3');
+save('images_segmented_3.mat', 'images_segmented_3', '-v7.3');
+% Save struct of time per frame rate
+save time_per_frame_1.mat time_per_frame_1
+save time_per_frame_2.mat time_per_frame_2
+save time_per_frame_3.mat time_per_frame_3
 end    
     
 % Function: normalize_RGB_image
