@@ -11,7 +11,7 @@ time_per_frame_2 = zeros(0);
 time_per_frame_3 = zeros(0);
 
 % List directory
-samples = dir('datasets/train_set/train_split');        
+samples = dir('datasets/train_set/validation_split');        
 samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
 
 num_image = 0;
@@ -20,7 +20,7 @@ total_images = uint8(length(samples));
 for ii=1:total_images    
     % Load image
     [~, name_sample, ~] = fileparts(samples(ii).name);
-    directory = sprintf('datasets/train_set/train_split/%s.jpg',...
+    directory = sprintf('datasets/train_set/validation_split/%s.jpg',...
     name_sample);
     image = imread(directory);
 
@@ -51,14 +51,19 @@ for ii=1:total_images
 
     [n, ~] = size(images_segmented_2);
     images_segmented_2(n+1, :, :) = image_segmented(:, :);
+    
+    simage = sprintf('mask_results/%s.png', name_sample);
+    imwrite(image_segmented, simage,'png');
 
     %---------------------------- METHOD #3 ---------------------------%
     
     % Converting an RGB image into XYZ color space
     tic
+    cd ..
     cd colorspace
     image_hsv = colorspace('rgb->xyz',image);
     cd ..
+    cd week1
     image_segmented = segmentation_by_equation(image_hsv);
     time_per_frame_3(ii) = toc;
     
@@ -118,10 +123,10 @@ blue_channel = image(:, :, 3);
 % Apply equation depending on color segmentation
 % RED color segmentation
 segmentation_red = max(0,double(red_channel) - ...
-0.65*(double(green_channel) + double(blue_channel)));
+0.68*(double(green_channel) + double(blue_channel)));
 % BLUE color segmentation
 segmentation_blue = max(0, double(blue_channel) - ...
-0.65*(double(red_channel) + double(green_channel)));
+0.68*(double(red_channel) + double(green_channel)));
 
 % Merge channels RED and BLUE
 segmentation = min(1, (segmentation_red + segmentation_blue));

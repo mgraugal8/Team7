@@ -2,7 +2,7 @@
 
 function task4()
 % List directory
-samples = dir('datasets/train_set/train_split');        
+samples = dir('datasets/train_set/validation_split');        
 samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
 total_images = uint8(length(samples));
 
@@ -51,7 +51,7 @@ image_3 = logical(squeeze(image_3(1,:,:)));
 
 % Load mask of groundtruth
 [~, name_sample, ~] = fileparts(samples(ii).name);
-dir_mask = sprintf('datasets/train_set/train_split/mask/mask.%s.png',...
+dir_mask = sprintf('datasets/train_set/validation_split/mask/mask.%s.png',...
 name_sample);
 mask = logical(imread(dir_mask));
 
