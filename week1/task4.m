@@ -75,7 +75,7 @@ FP3, FN3, time_per_frame_3(ii));
 
 % Load original image and plot with segmented images
 % [~, name_sample, ~] = fileparts(samples(ii).name);
-% dir_image = sprintf('datasets/train_set/train_split/%s.jpg',...
+% dir_image = sprintf('datasets/train_set/validation_split/%s.jpg',...
 % name_sample);
 % original_image = imread(dir_image);
 % plot_images(original_image, image_1, mask, 'METHOD 1');
@@ -97,6 +97,11 @@ save matlab_files/results_method2.mat results_method2
 save matlab_files/results_method3.mat results_method3
 end
 
+% Function: plot_images
+% Decription: plot images and masks with images of true positives, true
+% negatives, false positives and false negatives
+% Input: original_image, image, mask, method
+% Output: None
 function plot_images(original_image, image, mask, method)
 figure();
 set(gcf,'name','Segmentations','numbertitle','off','Position', ...
@@ -112,6 +117,10 @@ pause();
 close all;
 end
 
+% Function: get_results
+% Decription: save metrics son matlab struct
+% Input: results, final_results
+% Output: final_results
 function final_results = get_results(results, final_results)
 final_results.Precision = median(results.Precision);
 final_results.Accuracy = median(results.Accuracy);
@@ -123,6 +132,10 @@ final_results.FN = median(results.FN);
 final_results.Time_per_frame = median(results.Time_per_frame);
 end
 
+% Function: save_metrics
+% Decription: 
+% Input: metrics, ii, P, ACC, R, F1, TP, FP, FN, Time
+% Output: metrics
 function metrics = save_metrics(metrics, ii, P, ACC, R, F1, TP, FP, FN, Time)
 metrics.Precision(ii) = P;
 metrics.Accuracy(ii) = ACC;
@@ -134,6 +147,11 @@ metrics.FN(ii) = FN;
 metrics.Time_per_frame(ii) = Time;
 end
 
+% Function: get_parameters
+% Decription: calculate true positives, true negatives, false positives,
+% false negatives and accuracy from image and mask.
+% Input: image, mask
+% Output: TP, TN, FP, FN, ACC
 function [TP, TN, FP, FN, ACC] = get_parameters(image, mask)
 % Calculate True Positives (TP): correctly detected
 TP = sum(sum(image & mask));
@@ -144,9 +162,16 @@ FP = sum(sum((~ image) & mask));
 % Calculate False Negatives (FN): false detected samples
 FN = sum(sum(image & (~ mask)));
 % Calculate Accuracy (ACC) : (TP + TN) / total pixels
-ACC = (TP+TN)/sum(sum(image));
+[m, n] = size(image);
+ACC = (TP+TN)/(m*n);
 end
 
+% Function: get_metrics
+% Decription: calculate precision, recall, accepted outliers and % of false
+% detections from true positives, true negatives, false positives and false
+% negatives values
+% Input: TP, TN, FP, FN
+% Output: R, P, AO, FD, F1
 function [R, P, AO, FD, F1] = get_metrics(TP, TN, FP, FN)
 % Calculate precision: P = TP / P = TP / (TP + FP)
 P = TP/(TP+FP);
