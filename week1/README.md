@@ -8,9 +8,12 @@ All images with mask and annotations folder are provided on current project. Pro
   
   - task3(). Color segmentation to generate a mask. In order to generate a color segmentation, there are 3 methods to implement     color segmentation, in order to recognize traffic signals. All methods use the same equation but different colour spaces:
   
-    Equation segmentation to detect colors red and blue of traffic signals
+    Equation segmentation to detect colors red and blue of traffic signals:
+    
     mask =  red_mask + blue_mask  → α = 0.68
+    
     red_mask = red_component - α (green_component + blue_component)
+    
     blue_mask = blue_component - α (red_component + green_component)
 
     Methods implemented:
