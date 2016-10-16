@@ -118,7 +118,7 @@ close all;
 end
 
 % Function: get_results
-% Decription: save metrics son matlab struct
+% Decription: get metrics from matlab struct
 % Input: results, final_results
 % Output: final_results
 function final_results = get_results(results, final_results)
@@ -133,7 +133,7 @@ final_results.Time_per_frame = median(results.Time_per_frame);
 end
 
 % Function: save_metrics
-% Decription: 
+% Decription: save metrics on matlab strcut
 % Input: metrics, ii, P, ACC, R, F1, TP, FP, FN, Time
 % Output: metrics
 function metrics = save_metrics(metrics, ii, P, ACC, R, F1, TP, FP, FN, Time)
@@ -182,5 +182,9 @@ AO = FP/(FP+TN);
 % Calculate % false detections = FD = FP / P = 1 - precision
 FD = 1 - (double(P)/100);
 % Calcualte F1 measure  = 2 * ( (P * R) / (P + R) )
+if P > 0 & R > 0
 F1 = 2*((P*R)/(P+R));
+else
+F1 = 0;
+end
 end
