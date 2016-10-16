@@ -24,38 +24,44 @@ images_data = struct('A', zeros(n, m),'B', zeros(n, m),'C', zeros(n, m) ...
 for ii=1:length(samples)
     [~, name_sample, ~] = fileparts(samples(ii).name);
     file = fileread(['train/gt/gt.' name_sample '.txt']);
-    text = regexp(file, ' ', 'split');
+    lines= regexp(file, '\n', 'split');
     
-    % Get name. Delete character '.' from string name in order to 
-    % save index of name image
-    sname_sample = strrep(name_sample,'.','');
-    value(1) = str2double(sname_sample);     % file name
-    tly = str2double(text{1});              
-    tlx = str2double(text{2});
-    bry = str2double(text{3});
-    brx = str2double(text{4});
-    
-    % Computed values
-    value(2) = abs(tlx-brx);                % width
-    value(3) = abs(tly-bry);                % height
-    value(4) = value(2)/value(3);           % form factor
-    value(5) = value(2)*value(3);           % bbox area
-    
-    % Read mask image
-    directory = sprintf('train/mask/mask.%s.png', name_sample);
-    mask = imread(directory);
-    % Compute area = count number of white píxels
-    value(6) = sum(sum(mask));
-    value(7) = value(6)/value(5);           % filling ratio
+    for jj=1:(length(lines)-1)
+        text = regexp(lines(jj), ' ', 'split');
 
-    % There are extra space after letter. So we get the letter of type
-    % image only from position (1,1). Note: position(1,2) space character
-    image_type = char(text(1,5));
-    image_type = image_type(1,1);               
-    [n, ~] = size(images_data().(image_type));
-    images_data().(image_type)(n+1, :) = value(1, :);
+        % Get name. Delete character '.' from string name in order to 
+        % save index of name image
+        sname_sample = strrep(name_sample,'.','');
+        value(1) = str2double(sname_sample);     % file name
+        tly = str2double(text{1}{1});              
+        tlx = str2double(text{1}{2});
+        bry = str2double(text{1}{3});
+        brx = str2double(text{1}{4});
+
+        % Computed values
+        value(2) = abs(tlx-brx);                % width
+        value(3) = abs(tly-bry);                % height
+        value(4) = value(2)/value(3);           % form factor
+        value(5) = value(2)*value(3);           % bbox area
+
+        % Read mask image
+        directory = sprintf('train/mask/mask.%s.png', name_sample);
+        mask = imread(directory);
+        % Compute area = count number of white pÃ­xels
+        value(6) = sum(sum(mask));
+        value(7) = value(6)/value(5);           % filling ratio
+
+        % There are extra space after letter. So we get the letter of type
+        % image only from position (1,1). Note: position(1,2) space character
+        %image_type = char(text(1,5));
+        image_type = char(text{1}{5});
+        image_type = image_type(1,1);               
+        [n, ~] = size(images_data().(image_type));
+        images_data().(image_type)(n+1, :) = value(1, :);
+    end
 end
 
 % Save struct of images_data
 save matlab_files/images_data.mat images_data
 end
+ 
