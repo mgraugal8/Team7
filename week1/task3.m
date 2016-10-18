@@ -48,7 +48,12 @@ samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
 num_image = 0;
 total_images = uint8(length(samples));
 
-disp('Loading images...');
+% Delete old content of mask_results folder
+cd mask_results
+delete *
+cd ..
+
+disp('Starting image processing...');
 for ii=1:total_images    
     % Load image
     [~, name_sample, ~] = fileparts(samples(ii).name);
@@ -110,17 +115,22 @@ for ii=1:total_images
     disp(message);
 end 
 
+disp('Image processing: done');
 % Save struct of segmented images
 save('matlab_files/images_segmented_1.mat', 'images_segmented_1', '-v7.3');
+save('Save images_segmented_1.mat: done');
 save('matlab_files/images_segmented_2.mat', 'images_segmented_2', '-v7.3');
+save('Save images_segmented_2.mat: done');
 save('matlab_files/images_segmented_3.mat', 'images_segmented_3', '-v7.3');
+save('Save images_segmented_3.mat: done');
 % Save struct of time per frame rate
 save matlab_files/time_per_frame_1.mat time_per_frame_1
+save('Save time_per_frame_1.mat: done');
 save matlab_files/time_per_frame_2.mat time_per_frame_2
+save('Save time_per_frame_2.mat: done');
 save matlab_files/time_per_frame_3.mat time_per_frame_3
-
-disp('On directory ./mask_results there are mask results of method 2 (sRGB)')
-disp('Done');
+save('Save time_per_frame_3.mat: done');
+disp('task3(): done');
 end    
     
 % Function: normalize_RGB_image
@@ -213,7 +223,7 @@ end
 % Input: None
 % Output: None
 function show_description()
-disp('########## TASK3 DESCRIPTION ########################');
+disp('#---------------------- TASK 3 DESCRIPTION -----------------------');
 disp('Color segmentation to generate a mask. Methods: ');
 disp('Method 1: RGB color space');
 disp('Method 2: sRGB color space');
@@ -223,8 +233,9 @@ disp('- TRAIN: options to select:');
 disp('  - TRAIN SPLIT: color segmentation on train_split');
 disp('  - VALIDATION SPLIT: color segmentation on validation_split');
 disp('- TEST:  color segmentation on test dataset');
-disp('Files created: images_data_1, images_data_2 and images_data_3,');
+disp('Output files: images_data_1, images_data_2 and images_data_3,');
 disp('time_per_frame_1, time_per_frame_2, time_per_frame_3');
-disp('and mask result of method 2 on mask_results folder');
-disp('#####################################################');
+disp('and mask results of method 2 on mask_results folder');
+disp('------------------------------------------------------------------');
+fprintf('\n');
 end

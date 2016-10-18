@@ -7,14 +7,7 @@
 % sorting the matrix.
 
 function task2()
-disp('########## TASK2 DESCRIPTION ########################');
-disp('Create train/validation split using provided training images');
-disp('Options to select: TRAIN and TEST');
-disp('- TRAIN: split the dataset into training and validation from train folder');
-disp('  Dataset are splitted on folder datasets/train_set' );
-disp('- TEST: copy images from test folder on datsasets');
-disp('  Dataset are splitted on folder datasets/test_set' );
-disp('##################################');
+show_description();
 % Select dataset
 prompt = 'Do you want mork on train or test dataset? [train/test] : ';
 str = input(prompt,'s');
@@ -41,7 +34,7 @@ else
             %% Split types
             array_types = {'A','B','C','D','E','F'};
             num_types_singals = length(fieldnames(images_data));
-            disp('Creating train and validation split...');
+            fprintf('Creating train and validation split...');
             for tp=1:num_types_singals  
                 % Get type of signal
                 type_signal = char(array_types(tp));
@@ -71,7 +64,8 @@ else
                     copyfile(['train/mask/mask.' name_file '.png'], mask_direcotry);
                 end
             end
-            disp('Directory datasets/train_set and  datasets/validation_set created');
+            fprintf('done\n');
+            disp('Directory datasets/train_set and datasets/validation_set created');
         else
         disp('Error to load images_data.mat variable.');
         disp('Rerun task1() and select train dataset to create images_data.mat');
@@ -102,5 +96,21 @@ else
         end
     end
 end
-disp('Done');
+disp('task2(): done');
+end
+
+% Function: show_description
+% Description: show description on screen
+% Input: None
+% Output: None
+function show_description()
+disp('#---------------------- TASK 2 DESCRIPTION -----------------------');
+disp('Create train/validation split using provided training images');
+disp('Options to select: TRAIN and TEST');
+disp('- TRAIN: split the dataset into training and validation');
+disp('  Dataset are splitted on folder datasets/train_set' );
+disp('- TEST: copy images from test folder on datsasets');
+disp('  Dataset are splitted on folder datasets/test_set' );
+disp('------------------------------------------------------------------');
+fprintf('\n');
 end

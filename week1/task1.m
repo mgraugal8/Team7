@@ -6,11 +6,11 @@
 %% NOTE: you must have folder train on your main directory to compute images
 
 function task1()
-disp('########## TASK1 DESCRIPTION ########################');
-disp('Determine the characteristics of the signals in the training set.');
+disp('#---------------------- TASK 1 DESCRIPTION -----------------------');
+disp('Determine the characteristics of the signals in the training set');
 disp('Create matlab_files/images_data.mat');
-disp('#####################################################');
-%% training set: ');
+disp('------------------------------------------------------------------');
+fprintf('\n');
 % Clear screen
 clear all;     
 disp('List train directory: done');
@@ -28,7 +28,7 @@ m = 7;  % columns. 1: file name, 2: width, 3: height, 4: form factor,
 images_data = struct('A', zeros(n, m),'B', zeros(n, m),'C', ...
 zeros(n, m),'D', zeros(n, m), 'E', zeros(n, m),'F', zeros(n, m));
 
-disp('Loading dataset train...');
+disp('Load dataset train: done');
 for ii=1:length(samples)
 [~, name_sample, ~] = fileparts(samples(ii).name);
 file = fileread(['train/gt/gt.' name_sample '.txt']);
@@ -71,6 +71,6 @@ end
 
 % Save struct of images_data
 save matlab_files/images_data.mat images_data
-disp('Dataset train saved on matlab_files/images_data.mat');        
+disp('Saved matlab_files/images_data.mat: done');        
 disp('task1(): done');
 end
