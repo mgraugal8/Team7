@@ -113,11 +113,11 @@ results_method1 = final_results.method1;
 results_method2 = final_results.method2;
 results_method3 = final_results.method3;
 save matlab_files/results_method1.mat results_method1
-save('Save results_method1.mat: done');
+disp('Save results_method1.mat: done');
 save matlab_files/results_method2.mat results_method2
-save('Save results_method2.mat: done');
+disp('Save results_method2.mat: done');
 save matlab_files/results_method3.mat results_method3
-save('Save results_method3.mat: done');
+disp('Save results_method3.mat: done');
 save('task4(): done');
 end
 
@@ -218,12 +218,12 @@ end
 % Input: None
 % Output: None
 function show_description()
-disp('########## TASK4 DESCRIPTION ########################');
+disp('#---------------------- TASK 4 DESCRIPTION -----------------------');
 disp('Evaluate the segmentation using ground truth');
 disp('Options to select: TRAIN and VALIDATION');
 disp('- TRAIN SPLIT: evaluate train_split');
 disp('- VALIDATION SPLIT: evaluate validation_split');
 disp('Output files: results_method1, results_method2 and results_method3');
-disp('#####################################################');
+disp('------------------------------------------------------------------');
 fprintf('\n');
 end
