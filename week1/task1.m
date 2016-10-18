@@ -6,8 +6,15 @@
 %% NOTE: you must have folder train on your main directory to compute images
 
 function task1()
-clear all;                      % Clear screen
-samples = dir('train');         % List directory
+disp('########## TASK1 DESCRIPTION ########################');
+disp('Determine the characteristics of the signals in the training set.');
+disp('Create matlab_files/images_data.mat');
+disp('#####################################################');
+%% training set: ');
+% Clear screen
+clear all;     
+disp('List train directory: done');
+samples = dir('train');     
 
 %% READ IMAGES IN THE TRAIN FOLDER
 samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
@@ -17,15 +24,16 @@ samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
 % Format: (field, value) --> (type of signal, array of values)
 n = 0;  % rows. Firstly, initialized to 0
 m = 7;  % columns. 1: file name, 2: width, 3: height, 4: form factor, 
-        % 5: bbox area,  6: compute area, 7: filling ratio
-images_data = struct('A', zeros(n, m),'B', zeros(n, m),'C', zeros(n, m) ...
-,'D', zeros(n, m), 'E', zeros(n, m),'F', zeros(n, m));
+% 5: bbox area,  6: compute area, 7: filling ratio
+images_data = struct('A', zeros(n, m),'B', zeros(n, m),'C', ...
+zeros(n, m),'D', zeros(n, m), 'E', zeros(n, m),'F', zeros(n, m));
 
+disp('Loading dataset train...');
 for ii=1:length(samples)
-    [~, name_sample, ~] = fileparts(samples(ii).name);
-    file = fileread(['train/gt/gt.' name_sample '.txt']);
-    lines= regexp(file, '\n', 'split');
-    
+[~, name_sample, ~] = fileparts(samples(ii).name);
+file = fileread(['train/gt/gt.' name_sample '.txt']);
+lines= regexp(file, '\n', 'split');
+
     for jj=1:(length(lines)-1)
         text = regexp(lines(jj), ' ', 'split');
 
@@ -51,9 +59,9 @@ for ii=1:length(samples)
         value(6) = sum(sum(mask));
         value(7) = value(6)/value(5);           % filling ratio
 
-        % There are extra space after letter. So we get the letter of type
-        % image only from position (1,1). Note: position(1,2) space character
-        %image_type = char(text(1,5));
+        % There are extra space after letter. So we get the letter of 
+        % type image only from position (1,1). Note: position(1,2) space 
+        % character
         image_type = char(text{1}{5});
         image_type = image_type(1,1);               
         [n, ~] = size(images_data().(image_type));
@@ -63,5 +71,6 @@ end
 
 % Save struct of images_data
 save matlab_files/images_data.mat images_data
+disp('Dataset train saved on matlab_files/images_data.mat');        
+disp('task1(): done');
 end
- 

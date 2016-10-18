@@ -10,18 +10,50 @@ time_per_frame_1 = zeros(0);
 time_per_frame_2 = zeros(0);
 time_per_frame_3 = zeros(0);
 
-% List directory
-samples = dir('datasets/train_set/validation_split');        
-samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
+show_description();
+sdir = char('');
+prompt = 'Do you want mork on train or test dataset? [train/test] : ';
+str = input(prompt,'s');
+if isempty(str)
+    disp('Invalid option')
+else
+    if strcmp(str, 'train')
+        disp('Dataset train selected'); 
+        prompt = 'Do you want mork on train or validation split? [train/validation] : ';
+        str = input(prompt,'s');
+        if isempty(str)
+            disp('Invalid option');
+        else
+            if strcmp(str, 'train')
+                sdir = 'datasets/train_set/train_split';
+                samples = dir('datasets/train_set/train_split'); 
+                disp('Split train selected'); 
+            else
+                if strcmp(str, 'validation')
+                    sdir = 'datasets/train_set/validation_split';
+                	samples = dir('datasets/train_set/validation_split');
+                    disp('Split validation selected'); 
+                end
+            end
+        end      
+    else
+        disp('Dataset test selected');
+        sdir = 'datasets/test_set';
+        samples = dir('datasets/test_set'); 
+    end
+end
 
+% Load samples
+samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
 num_image = 0;
 total_images = uint8(length(samples));
 
+disp('Loading images...');
 for ii=1:total_images    
     % Load image
     [~, name_sample, ~] = fileparts(samples(ii).name);
-    directory = sprintf('datasets/train_set/validation_split/%s.jpg',...
-    name_sample);
+    
+    directory = sprintf('%s/%s.jpg', sdir, name_sample);
     image = imread(directory);
 
     %---------------------------- METHOD #1 ---------------------------%
@@ -86,6 +118,9 @@ save('matlab_files/images_segmented_3.mat', 'images_segmented_3', '-v7.3');
 save matlab_files/time_per_frame_1.mat time_per_frame_1
 save matlab_files/time_per_frame_2.mat time_per_frame_2
 save matlab_files/time_per_frame_3.mat time_per_frame_3
+
+disp('On directory ./mask_results there are mask results of method 2 (sRGB)')
+disp('Done');
 end    
     
 % Function: normalize_RGB_image
@@ -171,4 +206,25 @@ end
 
 pause();
 close all;
+end
+
+% Function: show_description
+% Description: show description on screen
+% Input: None
+% Output: None
+function show_description()
+disp('########## TASK3 DESCRIPTION ########################');
+disp('Color segmentation to generate a mask. Methods: ');
+disp('Method 1: RGB color space');
+disp('Method 2: sRGB color space');
+disp('Method 3: CIE XYZ color space');
+disp('Options to select: TRAIN and TEST');
+disp('- TRAIN: options to select:');
+disp('  - TRAIN SPLIT: color segmentation on train_split');
+disp('  - VALIDATION SPLIT: color segmentation on validation_split');
+disp('- TEST:  color segmentation on test dataset');
+disp('Files created: images_data_1, images_data_2 and images_data_3,');
+disp('time_per_frame_1, time_per_frame_2, time_per_frame_3');
+disp('and mask result of method 2 on mask_results folder');
+disp('#####################################################');
 end

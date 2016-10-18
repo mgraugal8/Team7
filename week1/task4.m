@@ -1,8 +1,29 @@
 % Task 4: Evaluate the segmentation using ground truth
 
 function task4()
-% List directory
-samples = dir('datasets/train_set/validation_split');        
+show_description();
+sdir = char('');
+prompt = 'Do you want evaluate train or validation split? [train/validation] : ';
+str = input(prompt,'s');
+if isempty(str)
+    disp('Invalid option')
+else
+    if strcmp(str, 'train')
+        disp('Split train selected');
+        sdir = 'datasets/train_set/train_split';
+        samples = dir('datasets/train_set/train_split'); 
+    else
+        if strcmp(str, 'validation')
+            disp('Split validation selected');
+            sdir = 'datasets/train_set/validation_split';
+            samples = dir('datasets/train_set/validation_split');         
+        end  
+        disp('Unknow option [?]');
+        disp('Rerun task4 and choose a valid option [train/validation]')
+    end
+end
+
+% List directory   
 samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
 total_images = uint8(length(samples));
 
@@ -51,8 +72,7 @@ image_3 = logical(squeeze(image_3(1,:,:)));
 
 % Load mask of groundtruth
 [~, name_sample, ~] = fileparts(samples(ii).name);
-dir_mask = sprintf('datasets/train_set/validation_split/mask/mask.%s.png',...
-name_sample);
+dir_mask = sprintf('%s/mask/mask.%s.png', sdir, name_sample);
 mask = logical(imread(dir_mask));
 
 % Get parameters of image using mask
@@ -187,4 +207,18 @@ F1 = 2*((P*R)/(P+R));
 else
 F1 = 0;
 end
+end
+
+% Function: show_description
+% Description: show description on screen
+% Input: None
+% Output: None
+function show_description()
+disp('########## TASK4 DESCRIPTION ########################');
+disp('Evaluate the segmentation using ground truth');
+disp('Options to select: TRAIN and VALIDATION');
+disp('- TRAIN SPLIT: evaluate train_split');
+disp('- VALIDATION SPLIT: evaluate validation_split');
+disp('Files created: results_method1, results_method2 and results_method3,');
+disp('#####################################################');
 end
