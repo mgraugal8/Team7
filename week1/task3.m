@@ -118,18 +118,18 @@ end
 disp('Image processing: done');
 % Save struct of segmented images
 save('matlab_files/images_segmented_1.mat', 'images_segmented_1', '-v7.3');
-save('Save images_segmented_1.mat: done');
+disp('Save images_segmented_1.mat: done');
 save('matlab_files/images_segmented_2.mat', 'images_segmented_2', '-v7.3');
-save('Save images_segmented_2.mat: done');
+disp('Save images_segmented_2.mat: done');
 save('matlab_files/images_segmented_3.mat', 'images_segmented_3', '-v7.3');
-save('Save images_segmented_3.mat: done');
+disp('Save images_segmented_3.mat: done');
 % Save struct of time per frame rate
 save matlab_files/time_per_frame_1.mat time_per_frame_1
-save('Save time_per_frame_1.mat: done');
+disp('Save time_per_frame_1.mat: done');
 save matlab_files/time_per_frame_2.mat time_per_frame_2
-save('Save time_per_frame_2.mat: done');
+disp('Save time_per_frame_2.mat: done');
 save matlab_files/time_per_frame_3.mat time_per_frame_3
-save('Save time_per_frame_3.mat: done');
+disp('Save time_per_frame_3.mat: done');
 disp('task3(): done');
 end    
     
