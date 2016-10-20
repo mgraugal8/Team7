@@ -17,10 +17,10 @@ se = getnhood(strel('square', 5));
 %%------------------------------ EROSION -----------------------------%%
 
 % Operations
-image_er = imerode(image,se);
+image_er = imerode(image, se);
 image_custom_er = custom_imerode(image, se);
-show_images(image, image_er, image_custom_er, 'EROSION operation', 'ORIGINAL image', 'MATLAB image', ...
-'CUSTOM image');
+% show_images(image, image_er, image_custom_er, 'EROSION operation', 'ORIGINAL image', 'MATLAB image', ...
+% 'CUSTOM image');
 
 % Check that custom erosion operation was succesfull
 disp('Check EROSION operation. Comparing images ...');
@@ -30,10 +30,10 @@ check_images(image_er, image_custom_er);
 %%----------------------------- DILATION -----------------------------%%
 
 % Operations
-image_di = imdilate(image,se);
+image_di = imdilate(image, se);
 image_custom_di = custom_imdilate(image, se);
-show_images(image, image_di, image_custom_di, 'DILATION operation', 'ORIGINAL image', 'MATLAB image', ...
-'CUSTOM image');
+% show_images(image, image_di, image_custom_di, 'DILATION operation', 'ORIGINAL image', 'MATLAB image', ...
+% 'CUSTOM image');
 
 % Check that custom dilation operation was succesfull
 disp('Check DILATION operation. Comparing images ...');
@@ -43,10 +43,10 @@ check_images(image_di, image_custom_di);
 %%------------------------------ OPENING -----------------------------%%
 
 % Operations
-image_op = imopen(image,se);
+image_op = imopen(image, se);
 image_custom_op = custom_imopen(image, se);
-show_images(image, image_op, image_custom_op, 'OPENING operation', 'ORIGINAL image', 'MATLAB image', ...
-'CUSTOM image');
+% show_images(image, image_op, image_custom_op, 'OPENING operation', 'ORIGINAL image', 'MATLAB image', ...
+% 'CUSTOM image');
 
 % Check that custom opening operation was succesfull
 disp('Check OPENING operation. Comparing images ...');
@@ -56,10 +56,10 @@ check_images(image_op, image_custom_op);
 %%------------------------------ CLOSING -----------------------------%%
 
 % Operations
-image_cl = imopen(image,se);
+image_cl = imclose(image, se);
 image_custom_cl = custom_imclose(image, se);
-show_images(image, image_cl, image_custom_cl, 'CLOSING operation', 'ORIGINAL image', 'MATLAB image', ...
-'CUSTOM image');
+% show_images(image, image_cl, image_custom_cl, 'CLOSING operation', 'ORIGINAL image', 'MATLAB image', ...
+% 'CUSTOM image');
 
 % Check that custom closing operation was succesfull
 disp('Check CLOSING operation. Comparing images ...');
@@ -68,9 +68,27 @@ check_images(image_cl, image_custom_cl);
 
 %%------------------------------ TOP HAT -----------------------------%%
 
+% Operations
+image_th = imtophat(image, se);
+image_custom_th = custom_imtpohat(image, se);
+% show_images(image, image_th, image_custom_th, 'TOP HAT operation', 'ORIGINAL image', 'MATLAB image', ...
+% 'CUSTOM image');
+
+% Check that custom top hat operation was succesfull
+disp('Check TOP HAT operation. Comparing images ...');
+check_images(image_th, image_custom_th);
 
 %%---------------------------- DUAL TOP HAT --------------------------%%
 
+% Operations
+image_th_dual = imbothat(image, se);
+image_custom_th_dual = custom_imtpohat_dual(image, se);
+% show_images(image, image_th_dual, image_custom_th_dual, 'DUAL TOP HAT operation', 'ORIGINAL image', ...
+% 'MATLAB image', 'CUSTOM image');
+
+% Check that custom top hat operation was succesfull
+disp('Check DUAL TOP HAT operation. Comparing images ...');
+check_images(image_th_dual, image_custom_th_dual);
 
 end
 
@@ -93,7 +111,7 @@ end
 % Output: None (show on screen result)
 function check_images(image_1, image_2)
 fprintf('Images are: ');
-if sum(image_1(:)) == sum(image_2(:))
+if image_1(:, :) == image_2(:, :)
     fprintf('equal\n');
     fprintf('\n');
 else
@@ -162,8 +180,8 @@ function image_eroded = custom_imerode(image, se)
 m = floor(m/2);
 n = floor(n/2);
 
-% Add value 0 on borders of images
-image = padarray(image, [m n]);
+% Add value 1 on borders of images
+image = padarray(image, [m n], 1);
 % Initialize to 0 dilated image
 image_eroded = false(size(image));
 % Get sizes of dilated image
@@ -177,12 +195,12 @@ max_j = max_j-(2*n);
 for i=1:max_i
     for j=1:max_j
         window = image(i:i+(2*m),j:j+(2*n));   % Get window
-        min_value = min(min(window&se));       % Get local MINIMUM
+        min_value = min(min(window-se));       % Get local MINIMUM
         image_eroded(i,j) = min_value;         % Assing pixel value to image
     end
 end
 % Resize image eroded
-image_eroded = image_eroded(1:max_i, 1:max_j);
+image_eroded = ~image_eroded(1:max_i, 1:max_j);
 end
 
 % Function: custom_imopen
@@ -190,15 +208,41 @@ end
 % Input: image, se
 % Output: image_opened
 function image_opened = custom_imopen(image, se)
-
-image_opened = 0;
+% The definition of a morphological opening of an image is an erosion followed by a dilation, 
+% using the same structuring element for both operations.
+image_opened = custom_imerode(image, se);
+image_opened = custom_imdilate(image_opened, se);
 end
 
-% Function: custom_imopenimage_opened
+% Function: custom_imclose
 % Description: custom closing operation
 % Input: image, se
 % Output: image_closed
 function image_closed = custom_imclose(image, se)
+% The definition of a morphological closing of an image is an dilation followed by a erosion, 
+% using the same structuring element for both operations.
+image_closed = custom_imdilate(image, se);
+image_closed = custom_imerode(image_closed, se);
+end
 
-image_closed = 0;
+% Function: custom_imtpohat
+% Description: custom top hat operation
+% Input: image, se
+% Output: image_tpohat
+function image_tophat = custom_imtpohat(image, se)
+% Top-hat filtering computes the morphological opening of the image (using imopen) and then 
+% subtracts the result from the original image
+image_tophat = custom_imopen(image, se);
+image_tophat = image - image_tophat; 
+end
+
+% Function: custom_imtpohat_dual
+% Description: custom top hat operation
+% Input: image, se
+% Output: image_dual_tophat
+function image_dual_tophat = custom_imtpohat_dual(image, se)
+% Top-hat filtering computes the morphological closing of the image (using imopen) and then 
+% subtracts the original image from the result
+image_dual_tophat = custom_imclose(image, se);
+image_dual_tophat = image_dual_tophat - image; 
 end
