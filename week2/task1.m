@@ -7,7 +7,7 @@ function task1()
 show_description_on_screen();
 
 % Load example image to process. Images are logical (binaries)
-image = im2bw(imread('example.png'));
+image = im2bw(imread('example.jpg'));
 
 % Structuring element: 5 by 5 square
 % Getnhood: Get structuring element neighborhood. By this way, we can see
@@ -90,6 +90,7 @@ image_custom_th_dual = custom_imtpohat_dual(image, se);
 disp('Check DUAL TOP HAT operation. Comparing images ...');
 check_images(image_th_dual, image_custom_th_dual);
 
+disp('task1(): done')
 end
 
 % Function: show_description
@@ -133,74 +134,6 @@ subplot(1,3,2), imshow(image_2), title(title_2);
 subplot(1,3,3), imshow(image_3), title(title_3);
 pause();
 close all;
-end
-
-% Function: custom_imdilate
-% Description: custom dilation operation
-% Input: image, se
-% Output: image dilated
-function image_dilated = custom_imdilate(image, se)
-% Get integer sizes of structuring element
-[m, n] = size(se);
-% Divided by 2 in order to adjust local window into image
-m = floor(m/2);
-n = floor(n/2);
-
-% Add value 0 on borders of images
-image = padarray(image, [m n]);
-% Initialize to 0 dilated image
-image_dilated = false(size(image));
-% Get sizes of dilated image
-[max_i, max_j] = size(image);
-
-% Set max_i and max_j iterations to iterate inside of image
-max_i = max_i-(2*m);
-max_j = max_j-(2*n);
-
-% Iterate pixel by pixel of image
-for i=1:max_i
-    for j=1:max_j
-        window = image(i:i+(2*m),j:j+(2*n));   % Get window
-        max_value = max(max(window&se));       % Get local MAXIMUM
-        image_dilated(i,j) = max_value;        % Assing pixel value to image
-    end
-end
-% Resize image dilated
-image_dilated = image_dilated(1:max_i, 1:max_j);
-end
-
-% Function: image_eroded
-% Description: custom erosion operation
-% Input: image, se
-% Output: image_eroded
-function image_eroded = custom_imerode(image, se)
-% Get integer sizes of structuring element
-[m, n] = size(se);
-% Divided by 2 in order to adjust local window into image
-m = floor(m/2);
-n = floor(n/2);
-
-% Add value 1 on borders of images
-image = padarray(image, [m n], 1);
-% Initialize to 0 dilated image
-image_eroded = false(size(image));
-% Get sizes of dilated image
-[max_i, max_j] = size(image);
-
-% Set max_i and max_j iterations to iterate inside of image
-max_i = max_i-(2*m);
-max_j = max_j-(2*n);
-
-% Iterate pixel by pixel of image
-for i=1:max_i
-    for j=1:max_j
-        window = image(i:i+(2*m),j:j+(2*n));   % Get window
-        min_value = min(min(window-se));       % Get local MINIMUM
-        image_eroded(i,j) = min_value;         % Assing pixel value to image
-    end
-end
-% Resize image eroded
-image_eroded = ~image_eroded(1:max_i, 1:max_j);
 end
 
 % Function: custom_imopen
