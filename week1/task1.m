@@ -6,7 +6,7 @@
 %% NOTE: you must have folder train on your main directory to compute images
 
 function task1()
-disp('#---------------------- TASK 1 DESCRIPTION -----------------------');
+disp('----------------------- TASK 1 DESCRIPTION -----------------------');
 disp('Determine the characteristics of the signals in the training set');
 disp('Create matlab_files/images_data.mat');
 disp('------------------------------------------------------------------');

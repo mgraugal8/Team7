@@ -223,7 +223,7 @@ end
 % Input: None
 % Output: None
 function show_description()
-disp('#---------------------- TASK 3 DESCRIPTION -----------------------');
+disp('----------------------- TASK 3 DESCRIPTION -----------------------');
 disp('Color segmentation to generate a mask. Methods: ');
 disp('Method 1: RGB color space');
 disp('Method 2: sRGB color space');

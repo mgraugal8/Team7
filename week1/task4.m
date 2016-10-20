@@ -218,7 +218,7 @@ end
 % Input: None
 % Output: None
 function show_description()
-disp('#---------------------- TASK 4 DESCRIPTION -----------------------');
+disp('----------------------- TASK 4 DESCRIPTION -----------------------');
 disp('Evaluate the segmentation using ground truth');
 disp('Options to select: TRAIN and VALIDATION');
 disp('- TRAIN SPLIT: evaluate train_split');

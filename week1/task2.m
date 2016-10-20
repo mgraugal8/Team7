@@ -104,7 +104,7 @@ end
 % Input: None
 % Output: None
 function show_description()
-disp('#---------------------- TASK 2 DESCRIPTION -----------------------');
+disp('----------------------- TASK 2 DESCRIPTION -----------------------');
 disp('Create train/validation split using provided training images');
 disp('Options to select: TRAIN and TEST');
 disp('- TRAIN: split the dataset into training and validation');
