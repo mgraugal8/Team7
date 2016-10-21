@@ -15,7 +15,7 @@ images_data_group = struct('ABC', zeros(0, 0, 0),'DF', zeros(0, 0, 0),'E', zeros
 images_data_group = divide_signals(images_data_group, total_images, samples, sdir);
 
 % Save struct of computational times
-save matlab_files/images_data_group.mat images_data_group
+save('matlab_files/images_data_group.mat', 'images_data_group', '-v7.3');
 disp('Save images_data_group.mat: done');
 
 disp('task4(): done');
