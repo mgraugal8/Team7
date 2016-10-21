@@ -11,12 +11,21 @@ samples = dir(sdir);
 samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
 total_images = uint8(length(samples));
 
-images_data_group = struct('ABC', zeros(0, 0, 0),'DF', zeros(0, 0, 0),'E', zeros(0, 0, 0));
-images_data_group = divide_signals(images_data_group, total_images, samples, sdir);
+images_data_group_ABC = zeros(0, 0, 0, 0);
+images_data_group_DF = zeros(0, 0, 0, 0);
+images_data_group_E = zeros(0, 0, 0, 0);
+
+images_data_group_ABC = get_signals(images_data_group_ABC, total_images, samples, sdir, 'ABC');
+images_data_group_DF = get_signals(images_data_group_DF, total_images, samples, sdir, 'DF');
+images_data_group_E = get_signals(images_data_group_E, total_images, samples, sdir, 'E');
 
 % Save struct of computational times
-save('matlab_files/images_data_group.mat', 'images_data_group', '-v7.3');
-disp('Save images_data_group.mat: done');
+save('matlab_files/images_data_group_ABC.mat', 'images_data_group_ABC', '-v7.3');
+disp('Save images_data_group_ABC.mat: done');
+save('matlab_files/images_data_group_DF.mat', 'images_data_group_DF', '-v7.3');
+disp('Save images_data_group_DF.mat: done');
+save('matlab_files/images_data_group_E.mat', 'images_data_group_E', '-v7.3');
+disp('Save images_data_group_E.mat: done');
 
 disp('task4(): done');
 end
@@ -36,8 +45,9 @@ end
 % Description: divide the signals into groups according to color
 % Input: images_data_group, total_images, samples, sdir
 % Output: images_data_group
-function images_data_group = divide_signals(images_data_group, total_images, samples, sdir)
-disp('Divide the signals into groups according to color: ABC, DF and E');
+function images_data_group = get_signals(images_data_group, total_images, samples, sdir, type)
+fprintf('Divide the signals into groups according to color: %s', type);
+fprintf('\n');
 num_image = 0;
 for ii=1:total_images
    
@@ -50,18 +60,10 @@ for ii=1:total_images
     directory = sprintf('%s/%s.jpg', sdir, name_sample);
     image = imread(directory);
     
-    switch image_type
-        case {'A', 'B', 'C'}
-            [n, ~] = size(images_data_group().ABC);
-            images_data_group.ABC(n+1, :, :) = image(:, :);
-        case {'D', 'F'}
-            [n, ~] = size(images_data_group().DF);
-            images_data_group.DF(n+1, :, :) = image(:, :);
-        case 'E'
-            [n, ~] = size(images_data_group().E);
-            images_data_group.E(n+1, :, :) = image(:, :);
-        otherwise
-            disp('Unknow image type');
+    if strfind(type, image_type)
+        [n, ~] = size(images_data_group);
+        images_data_group(n+1, :, :, :) = image(:, :, :); 
+        
     end
     
    % Message to display on matlab
