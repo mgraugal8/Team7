@@ -7,7 +7,7 @@ function task1()
 show_description_on_screen();
 
 % Load example image to process. Images are logical (binaries)
-image = im2bw(imread('example.jpg'));
+image = im2bw(imread('images/image3.jpg'));
 
 % Structuring element: 5 by 5 square
 % Getnhood: Get structuring element neighborhood. By this way, we can see

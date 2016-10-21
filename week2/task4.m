@@ -1,74 +1,121 @@
-%% Task 4 -- Apply histogram back-projection to perform color segmentation
+%% Task 4 Compute the histograms
+% Histogram for A, B and C  -> Group 1: g1
+% Histogram for D and F     -> Group 2: g2
+% Histogram for E           -> Group 3: g3
 
-function task4()
+% Initialize environment variables
+clear all; close all; clc;
+load('matlab_files/images_data.mat');
+% Path to the train split
+path = '../week1/train'; 
+nbins = 8;
 
-% Show description on screen about task4
-show_description_on_screen();
+% Histograms
+hist_g1 = zeros(nbins, nbins, nbins);
+hist_g2 = zeros(nbins, nbins, nbins);
+hist_g3 = zeros(nbins, nbins, nbins);
+% Accumulate number of pixels
+pixels_g1 = 0;
+pixels_g2 = 0;
+pixels_g3 = 0;
+% Types of singla groups
+types_abc = ['A', 'B', 'C'];
+types_df = ['D', 'F'];
 
-% Load images from train
-sdir = '../week1/train';
-samples = dir(sdir); 
-samples = samples(arrayfun(@(x) x.name(1) == '0', samples));
-total_images = uint8(length(samples));
-
-images_data_group_ABC = zeros(0, 0, 0, 0);
-images_data_group_DF = zeros(0, 0, 0, 0);
-images_data_group_E = zeros(0, 0, 0, 0);
-
-images_data_group_ABC = get_signals(images_data_group_ABC, total_images, samples, sdir, 'ABC');
-images_data_group_DF = get_signals(images_data_group_DF, total_images, samples, sdir, 'DF');
-images_data_group_E = get_signals(images_data_group_E, total_images, samples, sdir, 'E');
-
-% Save struct of computational times
-save('matlab_files/images_data_group_ABC.mat', 'images_data_group_ABC', '-v7.3');
-disp('Save images_data_group_ABC.mat: done');
-save('matlab_files/images_data_group_DF.mat', 'images_data_group_DF', '-v7.3');
-disp('Save images_data_group_DF.mat: done');
-save('matlab_files/images_data_group_E.mat', 'images_data_group_E', '-v7.3');
-disp('Save images_data_group_E.mat: done');
-
-disp('task4(): done');
+%% Compute A, B and C
+disp('Compute A, B, C...');
+total_images = length(images_data.(types_abc(1))) + ...
+               length(images_data.(types_abc(2))) + ...
+               length(images_data.(types_abc(3)));
+num_image = 1;
+for i=1:length(types_abc)
+   for ll=1:length(images_data.(types_abc(i)))
+        image_name=num2str(images_data.(types_abc(i))(ll,1)); %Uncomplete name
+        full_name=make_file_name(image_name);
+            if exist([path '/' full_name '.jpg'], 'file') == 2
+                img=imread([path '/' full_name '.jpg']);
+                mask=imread([path '/mask/mask.' full_name '.png']);
+                sing_hist = single_histogram(img,mask,nbins);
+                npixels = sum(sum(sum(sing_hist)));
+                pixels_g1 = pixels_g1+npixels;
+                hist_g1=hist_g1+sing_hist;
+                fprintf('Image: %s.jpg FOUND, ', full_name);
+                message = sprintf('processing: %d/%d', num_image, total_images);
+            else
+                fprintf('Image: %s.jpg NOT FOUND', full_name);
+                message = sprintf('cant process: %d/%d', num_image, total_images);
+            end
+            disp(message);
+            num_image = num_image + 1;
+   end    
 end
 
-% Function: show_description
-% Description: show description on screen
-% Input: None
-% Output: None
-function show_description_on_screen()
-disp('----------------------- TASK 4 DESCRIPTION -----------------------');
-disp('Apply histogram back-projection to perform color segmentation ');
-disp('------------------------------------------------------------------');
-fprintf('\n');
+%% Compute D and F
+disp('Compute D, F...');
+total_images = length(images_data.(types_df(1))) + ...
+               length(images_data.(types_df(2)));
+num_image = 1;
+for i=1:length(types_df)
+   for ll=1:length(images_data.(types_df(i)))
+        image_name=num2str(images_data.(types_df(i))(ll,1)); %Uncomplete name
+        full_name=make_file_name(image_name);
+            if exist([path '/' full_name '.jpg'], 'file') == 2
+                img=imread([path '/' full_name '.jpg']);
+                mask=imread([path '/mask/mask.' full_name '.png']);
+                sing_hist=single_histogram(img,mask,nbins);
+                npixels=sum(sum(sum(sing_hist)));
+                pixels_g2=pixels_g2+npixels;
+                hist_g2=hist_g2+sing_hist;
+                fprintf('Image: %s.jpg FOUND, ', full_name);
+                message = sprintf('processing: %d/%d', num_image, total_images);
+            else
+                fprintf('Image: %s.jpg NOT FOUND', full_name);
+                message = sprintf('cant process: %d/%d', num_image, total_images);
+            end
+            disp(message);
+            num_image = num_image + 1;
+   end    
 end
 
-% Function: divide_signals
-% Description: divide the signals into groups according to color
-% Input: images_data_group, total_images, samples, sdir
-% Output: images_data_group
-function images_data_group = get_signals(images_data_group, total_images, samples, sdir, type)
-fprintf('Divide the signals into groups according to color: %s', type);
-fprintf('\n');
-num_image = 0;
-for ii=1:total_images
-   
-    [~, name_sample, ~] = fileparts(samples(ii).name);
-    file = fileread(['../week1/train/gt/gt.' name_sample '.txt']);
-    lines= regexp(file, '\n', 'split');
-    text = regexp(lines, ' ', 'split');
-    image_type = char(text{1}{5});
-    
-    directory = sprintf('%s/%s.jpg', sdir, name_sample);
-    image = imread(directory);
-    
-    if strfind(type, image_type)
-        [n, ~] = size(images_data_group);
-        images_data_group(n+1, :, :, :) = image(:, :, :); 
-        
+%% Compute E
+disp('Compute E...');
+total_images = length(images_data.E);
+num_image = 1;
+for ll=1:length(images_data.E)
+    image_name=num2str(images_data.E(ll,1)); %Uncomplete name
+    full_name=make_file_name(image_name);
+    if exist([path '/' full_name '.jpg'], 'file') == 2
+        img=imread([path '/' full_name '.jpg']);
+        mask=imread([path '/mask/mask.' full_name '.png']);
+        sing_hist=single_histogram(img,mask,nbins);
+        npixels=sum(sum(sum(sing_hist)));
+        pixels_g3=pixels_g3+npixels;
+        hist_g3=hist_g3+sing_hist;
+        fprintf('Image: %s.jpg FOUND, ', full_name);
+        message = sprintf('processing: %d/%d', num_image, total_images);
+    else
+        fprintf('Image: %s.jpg NOT FOUND', full_name);
+        message = sprintf('cant process: %d/%d', num_image, total_images);
     end
-    
-   % Message to display on matlab
-   num_image = num_image + 1;
-   message = sprintf('Images processed: %d/%d', num_image, total_images);
-   disp(message);
+    disp(message);
+    num_image = num_image + 1;
 end
-end
+
+%% Normalize the histograms
+hist_g1=hist_g1/pixels_g1;
+hist_g2=hist_g2/pixels_g2;
+hist_g3=hist_g3/pixels_g3;
+
+%% Compute image probability
+image = imread('../week1/train/00.003859.jpg'); 
+
+mask_g3 = compute_probability(image,hist_g3, nbins); 
+mask_g2 = compute_probability(image,hist_g2, nbins);
+mask_g1 = compute_probability(image,hist_g1, nbins); 
+
+mask_g3 = round(0.7*(mask_g3 / max(max(mask_g3))));
+mask_g2 = round(0.7*(mask_g2 / max(max(mask_g2))));
+mask_g1 = round(0.7*(mask_g1 / max(max(mask_g1))));
+
+mask = min((mask_g1+mask_g2+mask_g3),1);
+imshow(mask);
