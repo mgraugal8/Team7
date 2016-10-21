@@ -56,6 +56,10 @@ disp('Save computational_time.mat: done');
 disp('task2(): done');
 end
 
+% Function: show_description
+% Description: show description on screen
+% Input: None
+% Output: None
 function show_description_on_screen()
 disp('----------------------- TASK 2 DESCRIPTION -----------------------');
 disp('Measure the computational efficiency of your programed operators ');

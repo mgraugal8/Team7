@@ -39,6 +39,10 @@ disp('Images saved on mask_results_filtered folder');
 disp('task3(): done');
 end
 
+% Function: show_description
+% Description: show description on screen
+% Input: None
+% Output: None
 function show_description_on_screen()
 disp('----------------------- TASK 3 DESCRIPTION -----------------------');
 disp('Use operators to improve results in sign detection');
