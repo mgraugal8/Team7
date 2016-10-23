@@ -30,7 +30,7 @@ image_custom_er = custom_imerode(image, se);
 computational_time.custom_imerode = toc;
 
 % Calculate erosion efficiency
-computational_time.efficiency_erosion = computational_time.imerode / computational_time.custom_imerode;
+computational_time.efficiency_erosion = computational_time.custom_imerode / computational_time.imerode;
 computational_time.efficiency_erosion = computational_time.efficiency_erosion*100;
 
 %%------------------------------ DILATION EVAUATION -----------------------------%%
@@ -46,7 +46,7 @@ image_custom_er = custom_imdilate(image, se);
 computational_time.custom_imdilate = toc;
 
 % Calculate dilaton efficiency
-computational_time.efficiency_dilation = computational_time.imdilate / computational_time.custom_imdilate;
+computational_time.efficiency_dilation =  computational_time.custom_imdilate / computational_time.imdilate;
 computational_time.efficiency_dilation = computational_time.efficiency_dilation*100;
 
 % Save struct of computational times
